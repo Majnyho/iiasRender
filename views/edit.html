@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Nota</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Editar Nota</h1>
+  </header>
+  <div class="container">
+    <h2>Editar Nota</h2>
+    <form onsubmit="updateNote(); return false;">
+      <input type="text" id="title" placeholder="Título" required>
+      <textarea id="content" placeholder="Contenido" required></textarea>
+      <button type="submit">Guardar Cambios</button>
+    </form>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const response = await fetch(`/api/notes/${id}`);
+      const note = await response.json();
+      document.getElementById('title').value = note.title;
+      document.getElementById('content').value = note.content;
+
+      window.updateNote = async function() {
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+        try {
+          await fetch(`/api/notes/${id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title, content })
+          });
+          window.location.href = '/';
+        } catch (error) {
+          console.error('Error actualizando la nota:', error);
+        }
+      };
+    });
+  </script>
+</body>
+</html>
